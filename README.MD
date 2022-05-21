@@ -3,6 +3,6 @@ Program ini adalah program untuk mengimplementasikan knapsack problem menggunaka
 ## Instalasi modul-modul yang diperlukan:
 * numpy : pip install numpy ([dokumentasi modul](https://numpy.org/install/))
 * pandas : pip install pandas ([dokumentasi modul](https://pandas.pydata.org/docs/getting_started/index.html))
-* PySimpleGUI : pip install PySimpleGUI ([dokumentasi modul](https://pysimplegui.readthedocs.io/en/latest/))
+* PySimpleGUI : pip install pysimplegui ([dokumentasi modul](https://pysimplegui.readthedocs.io/en/latest/))
 ## Cara menggunakan program knapsack
 Source utama dari program ini adalah file knapsack.py. Anda dapat menggunakan file knapsack.ipynb untuk menggunakan program melalui jupyter notebook. Atau dapat menjalankan file knapsack_GUI.py untuk menjalankan program dengan graphical user interface (GUI)
