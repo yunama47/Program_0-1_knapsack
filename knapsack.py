@@ -2,6 +2,7 @@ try:
     import numpy as np
     import pandas as pd
     import PySimpleGUI as sg
+    print('impor berhasil')
 except:
     print('''Tidak dapat mengimport modul yang diperlukan, harap menginstall modul berikut 
              numpy : pip install numpy 
@@ -250,7 +251,9 @@ def testing(N):
         error = round((error/N)*100)
         print(f'pengecekan selesai , persentase terjadi perbedaan = {beda}% , persentase error = {error}%')
 
+def run_testing(N):
+    arr = list(testing(N))
+
 if __name__ == '__main__':
     #tulis code untuk mengetest modul di sini
-    KP = Knapsack(10,N=9)
-    print(KP.array_objek)
+    run_testing(10)
