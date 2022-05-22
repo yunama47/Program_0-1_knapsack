@@ -1,17 +1,13 @@
-from pandas import array
-
-
 try:
     import numpy as np
     import pandas as pd
     import PySimpleGUI as sg
 except:
-    raise ImportError(
-            " Tidak dapat mengimport modul yang diperlukan, harap menginstall modul berikut "
-            " numpy : pip install numpy "
-            " pandas : pip install pandas "
-            " PySimpleGUI : pip install PySimpleGUI "
-        )
+    print('''Tidak dapat mengimport modul yang diperlukan, harap menginstall modul berikut 
+             numpy : pip install numpy 
+             pandas : pip install pandas 
+             PySimpleGUI : pip install PySimpleGUI ''')
+    raise ImportError 
 class Objek:
     def __init__(self,Profit,Weight):
         '''Class untuk objek yang akan digunakan '''
@@ -221,6 +217,38 @@ class Knapsack:
         return (Solusi,Sisa,TW,TP)
 
 
+def testing(N):
+    print(f'''mengetest dengan perulangan sebanyak {N} kali
+============================================================================''')
+    beda = 0 #untuk menghitung berapa kali terjadi perbedaan antara hasil brute force dan greedy
+    error = 0 #untuk menghitung breapa kali terjadi error
+    for i in range(N):
+        O = Knapsack(250,N=10) #membuat instance knapsack acak
+        try:
+            S1,*K1 = O.Bruteforce_Knapsack() #menjalankan brute force
+            S2,*K2 = O.GreedyByProfit_Knapsack() #menjalankan greedy by profit
+            S3,*K3 = O.GreedyByWeight_Knapsack() #menjalankan greedy by weight
+            S4,*K4 = O.GreedyByDensity_Knapsack() #menjalankan greedy by density
+            greedy_jumlah = len(S2), len(S3), len(S4) #jumlah objek di himpunan solusi yang dihasilkan greedy
+            greedy_TP = K2[0],K3[0],K4[0] #total profit yang dihasilkan greedy
+            greedy_TW = K2[1],K3[1],K4[1] #total weight ------- || ----------
+            if K1[0] not in greedy_TP: #membandingkan total profit brute force dengan greedy
+                print(f'pada iterasi ke-{i},terdapat perbedaan')
+                if len(S1) in greedy_jumlah:#membandingkan jumlah objek pada solusi
+                    print(f'jumlah:BF = {len(S1)} , GP = {len(S2)}, GW = {len(S3)}, GD = {len(S4)}')
+                    print(f'profit:BF = {K1[0]} , GP = {K2[0]}, GW = {K2[0]}, GD = {K4[0]}')
+                    print(f'weight:BF = {K1[1]} , GP = {K2[1]}, GW = {K2[1]}, GD = {K4[1]}')
+                    yield O.tabel_objects.sort_values(by='Density', ascending=False)
+                print('============================================================================')
+                beda += 1
+        except Exception as e:
+            print(f'pada iterasi ke-{i} terjadi error, pesan error : {e}')
+            print('============================================================================')
+            error+=1
+    else:
+        beda = round((beda/N)*100)
+        error = round((error/N)*100)
+        print(f'pengecekan selesai , persentase terjadi perbedaan = {beda}% , persentase error = {error}%')
 
 if __name__ == '__main__':
     #tulis code untuk mengetest modul di sini
