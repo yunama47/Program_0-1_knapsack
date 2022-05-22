@@ -253,7 +253,9 @@ def testing(N):
 
 def run_testing(N):
     arr = list(testing(N))
+    return arr
 
 if __name__ == '__main__':
     #tulis code untuk mengetest modul di sini
-    run_testing(10)
+    
+    pass
