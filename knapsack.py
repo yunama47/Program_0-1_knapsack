@@ -1,3 +1,6 @@
+from pandas import array
+
+
 try:
     import numpy as np
     import pandas as pd
@@ -11,6 +14,7 @@ except:
         )
 class Objek:
     def __init__(self,Profit,Weight):
+        '''Class untuk objek yang akan digunakan '''
         self.p = Profit
         self.w = Weight
         self.d = Profit / Weight
@@ -19,47 +23,66 @@ class Objek:
         self.x_greedy_weight = 0
         self.x_greedy_density = 0
 
+    def __str__(self) -> str:
+        return f'(P = {self.p} , W = {self.w})'
 
 class Knapsack:
     def __init__(self,kapasitas,**parameter):
-        
-        assert 'N' in parameter or 'set_objek' in parameter #parameter harus berisi N atau set_objek
-        assert not ('N' in parameter and 'set_objek' in parameter) #parameter tidak boleh berisi N dan set_objek sekaligus
+        '''Constructor class knapsack , keterangan parameter :
+        kapasitas : kapasitas dari knapsack
+        N : jumlah objek ,jika diberikan paramater ini maka akan membuat objek secara otomatis dengan jumlah N
+        set_objek : himpunnan semua objek berupa dictionary'''
+        try:
+            assert 'N' in parameter or 'set_objek' in parameter #parameter harus berisi N atau set_objek
+            assert not ('N' in parameter and 'set_objek' in parameter) #parameter tidak boleh berisi N dan set_objek sekaligus
+            self.K = kapasitas
+            if 'N' not in parameter and 'set_objek' in parameter:
+                self.N = len(parameter['set_objek'])
+                self.__generate_objects_from(parameter['set_objek'])
+            elif 'N' in parameter and 'set_objek' not in parameter:
+                self.N = parameter['N']
+                self.__generate_objects_random()
+        except AssertionError:
+            raise AssertionError('harap input salah satu parameter N atau set_objek, tetapi tidak keduanya sekaligus')
+    
+    def __str__(self) -> str:
+        set = {key:str(val) for key,val in self.SET.items()}
+        return str(set)
 
-        self.K = kapasitas
-        if 'N' not in parameter and 'set_objek' in parameter:
-            self.N = len(parameter['set_objek'])
-            self.__generate_objects_from(parameter['set_objek'])
-        elif 'N' in parameter and 'set_objek' not in parameter:
-            self.N = parameter['N']
-            self.__generate_objects_random()
-            
-    def __generate_objects_from(self,set_objek):
+    @property
+    def array_objek(self):
+        arr = [f'{key} : (P = {val.p}, W = {val.w})' for key,val in self.SET.items()]
+        splitter = list(range(2,self.N,2))
+        arr = np.split(arr,splitter)
+        return arr
+
+    def __generate_objects_from(self,set_objek): #untuk membuat objek dari dictionary yang diberikan
         self.SET = {}
         for nama,objek in set_objek.items():
             self.SET[nama] = Objek(objek['p'],objek['w'])
         
-    def __generate_objects_random(self):
+    def __generate_objects_random(self): #untuk membuat objek otomatis
         self.SET = {}
         for i in range(self.N):
             Weight = np.random.randint(10,100)
             Profit = np.random.randint(10,100)
             self.SET[f'Objek{i+1}'] = Objek(Profit,Weight)
 
-    def __subsetsUtil(self,A, subset, index, S):
-        S.append(list(subset))
+    def __subsetsUtil(self,A, subset, index, S): #method untuk mencari semua subset
+        S.append(list(subset))                   #dari himpunan objek
         for i in range(index, len(A)):
             subset.append(list(A.items())[i])
             self.__subsetsUtil(A, subset, i + 1, S)
             subset.pop(-1)
         return
 
-    def __subsets(self):
+    def __subsets(self): #method untuk menyederhanakan parameter dari method __subsetUtil()
         self.subsets = []
         self.__subsetsUtil(self.SET, [], 0, self.subsets)
 
     @property
     def tabel_objects(self):
+        '''Untuk menampilkan tabel semua objek beserta atribut-atributnya'''
         df = []
         for key,val in self.SET.items():
             df.append(
@@ -73,6 +96,8 @@ class Knapsack:
     
     
     def show_subsets(self):
+        '''Untuk menampilkan tabel semua himpunan bagian dari himpunan kandidat solusi
+        beserta total profit dan total weight'''
         self.__subsets()
         df = []
         for subset in self.subsets:
@@ -88,6 +113,7 @@ class Knapsack:
 
     
     def Bruteforce_Knapsack(self):
+        '''Menjalankan algoritma Brute-force untuk instance knapsacck yang dibuat'''
         self.__subsets()
         SP = 0
         SW = 0
@@ -110,6 +136,7 @@ class Knapsack:
         return (solution,SP,SW)
     
     def GreedyByProfit_Knapsack(self):
+        '''Menjalankan algoritma greedy by profit untuk instance knapsacck yang dibuat'''
         set = self.tabel_objects
         set = set.sort_values(by='Profit', ascending=False)
         TP = 0
@@ -131,6 +158,7 @@ class Knapsack:
         return (Solusi,TP,TW)
     
     def GreedyByWeight_Knapsack(self):
+        '''Menjalankan algoritma greedy by weight untuk instance knapsacck yang dibuat'''
         set = self.tabel_objects
         set = set.sort_values(by='Weight', ascending=True)
         TP = 0
@@ -152,6 +180,7 @@ class Knapsack:
         return (Solusi,TP,TW)    
     
     def GreedyByDensity_Knapsack(self):
+        '''Menjalankan algoritma greedy by density untuk instance knapsacck yang dibuat'''
         set = self.tabel_objects
         set = set.sort_values(by='Density', ascending=False)
         TP = 0
@@ -172,9 +201,8 @@ class Knapsack:
         
         return (Solusi,TP,TW)
 
-    def __cek_ulang_knapsack(self,Solusi,Sisa,TW,TP):
+    def __cek_ulang_knapsack(self,Solusi,Sisa,TW,TP): #fungsi untuk mengecek ulang hasil knapsack dari algoritma greedy
         sk = self.K - TW #sisa kapasitas knapsack
-        # Solusi_alt = Solusi.copy()
 
         if len(Solusi) == self.N:
             return (Solusi,Sisa,TW,TP)
@@ -196,5 +224,5 @@ class Knapsack:
 
 if __name__ == '__main__':
     #tulis code untuk mengetest modul di sini
-    
-    pass
+    KP = Knapsack(10,N=9)
+    print(KP.array_objek)
