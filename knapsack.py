@@ -224,7 +224,7 @@ def testing(N):
     beda = 0 #untuk menghitung berapa kali terjadi perbedaan antara hasil brute force dan greedy
     error = 0 #untuk menghitung breapa kali terjadi error
     for i in range(N):
-        O = Knapsack(250,N=10) #membuat instance knapsack acak
+        O = Knapsack(np.random.randint(50,250),N=np.random.randint(5,10)) #membuat instance knapsack acak
         try:
             S1,*K1 = O.Bruteforce_Knapsack() #menjalankan brute force
             S2,*K2 = O.GreedyByProfit_Knapsack() #menjalankan greedy by profit
