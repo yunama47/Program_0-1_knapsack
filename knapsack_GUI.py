@@ -31,6 +31,7 @@ while running:
         sg.user_settings_set_entry('-filename-', value['Browse'])
     elif event == 'in_app':
         file_input = False
+        window.close()
         break
     try:
         kapasitas = int(value['k'])
@@ -42,7 +43,7 @@ while running:
         window.close()
 if file_input:
     KP = Knapsack(kapasitas,file_path=path)
-elif not file_input:
+else:
     err_msg = ''
     while running:
         layout = [
@@ -68,6 +69,7 @@ elif not file_input:
         except:
             err_msg = 'harap masukkan bilangan bulat'
             window.close()
+            
     if cara_input == 'Input satu-per-satu' and running:
         i = 1
         err_msg = ''
