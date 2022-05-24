@@ -15,7 +15,7 @@ err_msg = ''
 while running:
     layout = [
         [sg.Image("Knapsack_logo.png")],
-        [sg.Text('Input file data-data barang (.txt):')],
+        [sg.Text('Input file data-data barang (.csv):')],
         [sg.Input(sg.user_settings_get_entry('-filename-', ''),key='path'), sg.FileBrowse(file_types=("CSV .csv","*.csv .csv"))],
         [sg.Text("Kapasitas knapsack (K) = "),sg.Input(size=(10),key='k')],
         [sg.Text(err_msg,text_color='red')],
@@ -69,7 +69,7 @@ else:
         except:
             err_msg = 'harap masukkan bilangan bulat'
             window.close()
-            
+
     if cara_input == 'Input satu-per-satu' and running:
         i = 1
         err_msg = ''
