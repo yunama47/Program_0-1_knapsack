@@ -24,23 +24,23 @@ class Objek:
         return f'(P = {self.p} , W = {self.w})'
 
 class Knapsack:
-    def __init__(self,kapasitas,**parameter):
+    def __init__(self,kapasitas,N=None,set_objek=None,file_path=None):
         '''Constructor class knapsack , keterangan parameter :
         kapasitas : kapasitas dari knapsack
         N : jumlah objek ,jika diberikan paramater ini maka akan membuat objek secara otomatis dengan jumlah N
         set_objek : himpunnan semua objek berupa dictionary'''
-        try:
-            assert 'N' in parameter or 'set_objek' in parameter #parameter harus berisi N atau set_objek
-            assert not ('N' in parameter and 'set_objek' in parameter) #parameter tidak boleh berisi N dan set_objek sekaligus
-            self.K = kapasitas
-            if 'N' not in parameter and 'set_objek' in parameter:
-                self.N = len(parameter['set_objek'])
-                self.__generate_objects_from(parameter['set_objek'])
-            elif 'N' in parameter and 'set_objek' not in parameter:
-                self.N = parameter['N']
-                self.__generate_objects_random()
-        except AssertionError:
-            raise AssertionError('harap input salah satu parameter N atau set_objek, tetapi tidak keduanya sekaligus')
+        self.K = kapasitas
+        if N is None and file_path is None and set_objek is None:
+            raise AssertionError('harap masukkan parameter N atau set_objek atau file_path')
+        elif N is None and file_path is None and set_objek is not None:
+            self.N = len(set_objek)
+            self.__generate_objects_from(set_objek=set_objek)
+        elif N is None and file_path is not None and set_objek is None:
+            self.__generate_objects_from(file_path=file_path)
+        elif N is not None and file_path is None and set_objek is None:
+            self.N = N
+            self.__generate_objects_random()
+
     
     def __str__(self) -> str:
         set = {key:str(val) for key,val in self.SET.items()}
@@ -53,10 +53,16 @@ class Knapsack:
         arr = np.split(arr,splitter)
         return arr
 
-    def __generate_objects_from(self,set_objek): #untuk membuat objek dari dictionary yang diberikan
+    def __generate_objects_from(self,set_objek=None,file_path=None): #untuk membuat objek dari dictionary yang diberikan
         self.SET = {}
-        for nama,objek in set_objek.items():
-            self.SET[nama] = Objek(objek['p'],objek['w'])
+        if set_objek is not None and file_path is None:
+            for nama,objek in set_objek.items():
+                self.SET[nama] = Objek(objek['p'],objek['w'])
+        elif set_objek is None and file_path is not None:
+            df = pd.read_csv(file_path)
+            self.N = len(df)
+            for objek,p,w in zip(df.loc[:,'objek'],df.loc[:,'profit'],df.loc[:,'weight']):
+                self.SET[objek] = Objek(p,w)
         
     def __generate_objects_random(self): #untuk membuat objek otomatis
         self.SET = {}

@@ -1,4 +1,5 @@
 from knapsack import *
+from pathlib import Path
 
 nama_aplikasi = 'Aplikasi 0-1 Knapsack Problem'
 N = 0
@@ -7,58 +8,51 @@ set_objek = {}
 methods = ['Brute force','Greedy by profit','Greedy by weight', 'Greedy by density']
 cara_input = ''
 running = True
+file_input = False
+path = ''
 err_msg = ''
+
 while running:
     layout = [
-        [sg.Text('')],
-        [sg.Text("Input jumlah barang (N) = "),sg.Input()],
-        [sg.Text("Kapasitas knapsack (K) = "),sg.Input()],
+        [sg.Image("Knapsack_logo.png")],
+        [sg.Text('Input file data-data barang (.txt):')],
+        [sg.Input(sg.user_settings_get_entry('-filename-', ''),key='path'), sg.FileBrowse(file_types=("CSV .csv","*.csv .csv"))],
+        [sg.Text("Kapasitas knapsack (K) = "),sg.Input(size=(10),key='k')],
         [sg.Text(err_msg,text_color='red')],
-        [sg.Button('next')], 
-        [sg.Text('')],
+        [sg.B('Save',button_color='green'), sg.B('Input langsung di aplikasi', key='in_app')]
     ]
-    window = sg.Window(nama_aplikasi,layout)
+    window = sg.Window(nama_aplikasi, layout)
     event, value = window.read()
-    if event == sg.WIN_CLOSED:
+    if event == sg.WINDOW_CLOSED:
         running = False
         break
+    elif event == 'Save':
+        file_input = True
+        sg.user_settings_set_entry('-filename-', value['Browse'])
+    elif event == 'in_app':
+        file_input = False
+        break
     try:
-        N = int(value[0]) 
-        kapasitas = int(value[1])
+        kapasitas = int(value['k'])
+        path = str(Path(value['path']))
         window.close()
         break 
     except:
-        err_msg = 'harap masukkan bilangan bulat'
+        err_msg = 'harap masukkan bilangan bulat pada kapasitas'
         window.close()
-
-if running:
-    layout = [
-        [sg.Text('')],
-        [sg.Text('Pilih cara yang anda inginkan untuk menginput data barang')],
-        [sg.Button('Input satu-per-satu'),sg.Button('Buatkan otomatis'),],
-        [sg.Text('')],
-    ]
-    window = sg.Window(nama_aplikasi,layout)
-    event, value = window.read()
-    cara_input = event
-    if event == sg.WIN_CLOSED:
-        running = False
-    window.close()
-
-
-if cara_input == 'Input satu-per-satu' and running:
-    i = 1
+if file_input:
+    KP = Knapsack(kapasitas,file_path=path)
+elif not file_input:
     err_msg = ''
-    while True:
-        if i > N:
-            break
+    while running:
         layout = [
-            [sg.Text(f'Input data barang ke-{i} ,sudah diinput {i-1}/{N}')],
-            [sg.Text("Nama = "),sg.Input()],
-            [sg.Text("Profit ="),sg.Input()],
-            [sg.Text("Weight ="),sg.Input()],
+            [sg.Text('')],
+            [sg.Text("Input jumlah barang (N) = "),sg.Input()],
+            [sg.Text("Kapasitas knapsack (K) = "),sg.Input()],
+            [sg.Text('Pilih cara yang anda inginkan untuk menginput data barang')],
+            [sg.Button('Input satu-per-satu',button_color='green'),sg.Button('Buatkan otomatis',button_color='green'),],
             [sg.Text(err_msg,text_color='red')],
-            [sg.Button('next')] 
+            [sg.Text('')],
         ]
         window = sg.Window(nama_aplikasi,layout)
         event, value = window.read()
@@ -66,26 +60,55 @@ if cara_input == 'Input satu-per-satu' and running:
             running = False
             break
         try:
-            Barang = value[0]
-            P = int(value[1])
-            W = int(value[2])
-            set_objek[Barang] = {'w':W,'p':P}
-            if event == 'next':
-                i += 1
-                window.close()
-                continue
+            N = int(value[0]) 
+            kapasitas = int(value[1])
+            cara_input = event
+            window.close()
+            break 
         except:
             err_msg = 'harap masukkan bilangan bulat'
             window.close()
-    KP = Knapsack(kapasitas,set_objek=set_objek)
-elif cara_input == 'Buatkan otomatis' and running:
-    KP = Knapsack(kapasitas,N=N)
+    if cara_input == 'Input satu-per-satu' and running:
+        i = 1
+        err_msg = ''
+        while True:
+            if i > N:
+                break
+            layout = [
+                [sg.Text(f'Input data barang ke-{i} ,sudah diinput {i-1}/{N}')],
+                [sg.Text("Nama = "),sg.Input()],
+                [sg.Text("Profit ="),sg.Input()],
+                [sg.Text("Weight ="),sg.Input()],
+                [sg.Text(err_msg,text_color='red')],
+                [sg.Button('next')] 
+            ]
+            window = sg.Window(nama_aplikasi,layout)
+            event, value = window.read()
+            if event == sg.WIN_CLOSED:
+                running = False
+                break
+            try:
+                Barang = value[0]
+                P = int(value[1])
+                W = int(value[2])
+                set_objek[Barang] = {'w':W,'p':P}
+                if event == 'next':
+                    i += 1
+                    window.close()
+                    continue
+            except:
+                err_msg = 'harap masukkan bilangan bulat'
+                window.close()
+        KP = Knapsack(kapasitas,set_objek=set_objek)
+    elif cara_input == 'Buatkan otomatis' and running:
+        KP = Knapsack(kapasitas,N=N)
 
 metode = ''
 solusi = ''
 TW = ''
 TP = ''
 err_msg = ''
+
 while running:
     layout = [
             [sg.Text('Instance knapsack yang dibuat :')],
