@@ -109,12 +109,11 @@ metode = ''
 solusi = ''
 TW = ''
 TP = ''
-err_msg = ''
-
 while running:
+    err_msg = ''
     layout = [
             [sg.Text('Instance knapsack yang dibuat :')],
-            [[sg.Text(str(O))] for O in KP.array_objek],
+            [[sg.Text(str(O[0])),sg.Text(str(O[1]))] for O in KP.array_objek],
             [sg.Text(f'kapasitas knapsack = {kapasitas}'),],
             [sg.Text('Pilih metode untuk menyelesaikan')],
             [sg.DropDown(methods),sg.Button('ok')], 
@@ -133,27 +132,15 @@ while running:
     window.close()
     if metode == 'Brute force':
         S,TP,TW = KP.Bruteforce_Knapsack()
-        solusi = f'{S}'
-        TP = str(TP)
-        TW = str(TW)
-        err_msg = ''
     elif metode == 'Greedy by profit':
         S,TP,TW = KP.GreedyByProfit_Knapsack()
-        solusi = f'{S}'
-        TP = str(TP)
-        TW = str(TW)
-        err_msg = ''
     elif metode == 'Greedy by weight':
         S,TP,TW = KP.GreedyByWeight_Knapsack()
-        solusi = f'{S}'
-        TP = str(TP)
-        TW = str(TW)
-        err_msg = ''
     elif metode == 'Greedy by density':
         S,TP,TW = KP.GreedyByDensity_Knapsack()
-        solusi = f'{S}'
-        TP = str(TP)
-        TW = str(TW)
-        err_msg = ''
     else:
         err_msg = 'harap pilih metode'
+        continue
+    solusi = str(S)
+    TP = str(TP)
+    TW = str(TW)
