@@ -41,7 +41,7 @@ while running:
     except:
         err_msg = 'harap masukkan bilangan bulat pada kapasitas'
         window.close()
-if file_input:
+if file_input and running:
     KP = Knapsack(kapasitas,file_path=path)
 else:
     err_msg = ''
